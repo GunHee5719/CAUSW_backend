@@ -65,6 +65,8 @@ public class BoardDomainModel {
             List<String> createRoleList,
             CircleDomainModel circle
     ) {
+        createRoleList.add(Role.ADMIN.getValue());
+
         return new BoardDomainModel(
                 null,
                 name,

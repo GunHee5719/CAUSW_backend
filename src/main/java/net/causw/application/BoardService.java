@@ -87,14 +87,21 @@ public class BoardService {
         validatorBucket
                 .validate();
 
-        return BoardResponseDto.from(boardDomainModel);
+        return BoardResponseDto.from(boardDomainModel, Role.NONE);
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDto> findAll() {
+    public List<BoardResponseDto> findAll(String userId) {
+        UserDomainModel userDomainModel = this.userPort.findById(userId).orElseThrow(
+                () -> new BadRequestException(
+                        ErrorCode.ROW_DOES_NOT_EXIST,
+                        "Invalid request user id"
+                )
+        );
+
         return this.boardPort.findAll()
                 .stream()
-                .map(BoardResponseDto::from)
+                .map(boardDomainModel -> BoardResponseDto.from(boardDomainModel, userDomainModel.getRole()))
                 .collect(Collectors.toList());
     }
 
@@ -103,14 +110,21 @@ public class BoardService {
             String currentUserId,
             String circleId
     ) {
-        CircleDomainModel circle = this.circlePort.findById(circleId).orElseThrow(
+        CircleDomainModel circleDomainModel = this.circlePort.findById(circleId).orElseThrow(
                 () -> new BadRequestException(
                         ErrorCode.ROW_DOES_NOT_EXIST,
                         "Invalid circle id"
                 )
         );
 
-        CircleMemberDomainModel circleMember = this.circleMemberPort.findByUserIdAndCircleId(currentUserId, circle.getId()).orElseThrow(
+        UserDomainModel userDomainModel = this.userPort.findById(currentUserId).orElseThrow(
+                () -> new BadRequestException(
+                        ErrorCode.ROW_DOES_NOT_EXIST,
+                        "Invalid request user id"
+                )
+        );
+
+        CircleMemberDomainModel circleMember = this.circleMemberPort.findByUserIdAndCircleId(currentUserId, circleDomainModel.getId()).orElseThrow(
                 () -> new BadRequestException(
                         ErrorCode.NOT_MEMBER,
                         "The user is not a member of circle"
@@ -118,7 +132,7 @@ public class BoardService {
         );
 
         ValidatorBucket.of()
-                .consistOf(TargetIsDeletedValidator.of(circle.getIsDeleted()))
+                .consistOf(TargetIsDeletedValidator.of(circleDomainModel.getIsDeleted()))
                 .consistOf(CircleMemberStatusValidator.of(
                         circleMember.getStatus(),
                         List.of(CircleMemberStatus.MEMBER)
@@ -127,7 +141,7 @@ public class BoardService {
 
         return this.boardPort.findByCircleId(circleId)
                 .stream()
-                .map(BoardResponseDto::from)
+                .map(boardDomainModel -> BoardResponseDto.from(boardDomainModel, userDomainModel.getRole()))
                 .collect(Collectors.toList());
     }
 

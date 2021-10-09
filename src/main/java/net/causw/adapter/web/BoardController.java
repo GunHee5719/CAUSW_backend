@@ -30,14 +30,17 @@ public class BoardController {
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public BoardResponseDto findById(@AuthenticationPrincipal String userId, @PathVariable String id) {
+    public BoardResponseDto findById(
+            @AuthenticationPrincipal String userId,
+            @PathVariable String id
+    ) {
         return this.boardService.findById(userId, id);
     }
 
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public List<BoardResponseDto> findAll() {
-        return this.boardService.findAll();
+    public List<BoardResponseDto> findAll(@AuthenticationPrincipal String userId) {
+        return this.boardService.findAll(userId);
     }
 
     @GetMapping(params = "circleId")
@@ -51,23 +54,29 @@ public class BoardController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public BoardResponseDto create(@AuthenticationPrincipal String creatorId,
-                                   @RequestBody BoardCreateRequestDto boardCreateRequestDto) {
+    public BoardResponseDto create(
+            @AuthenticationPrincipal String creatorId,
+            @RequestBody BoardCreateRequestDto boardCreateRequestDto
+    ) {
         return this.boardService.create(creatorId, boardCreateRequestDto);
     }
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public BoardResponseDto update(@AuthenticationPrincipal String updaterId,
-                                   @PathVariable String id,
-                                   @RequestBody BoardUpdateRequestDto boardUpdateRequestDto) {
+    public BoardResponseDto update(
+            @AuthenticationPrincipal String updaterId,
+            @PathVariable String id,
+            @RequestBody BoardUpdateRequestDto boardUpdateRequestDto
+    ) {
         return this.boardService.update(updaterId, id, boardUpdateRequestDto);
     }
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public BoardResponseDto delete(@AuthenticationPrincipal String deleterId,
-                                   @PathVariable String id) {
+    public BoardResponseDto delete(
+            @AuthenticationPrincipal String deleterId,
+            @PathVariable String id
+    ) {
         return this.boardService.delete(deleterId, id);
     }
 }
