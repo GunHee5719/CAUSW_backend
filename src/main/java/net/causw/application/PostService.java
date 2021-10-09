@@ -99,6 +99,45 @@ public class PostService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public List<PostResponseDto> findAll(String userId, String boardId) {
+        ValidatorBucket validatorBucket = ValidatorBucket.of();
+
+        BoardDomainModel boardDomainModel = this.boardPort.findById(boardId).orElseThrow(
+                () -> new BadRequestException(
+                        ErrorCode.ROW_DOES_NOT_EXIST,
+                        "Invalid board id"
+                )
+        );
+
+        boardDomainModel.getCircle().ifPresent(
+                circleDomainModel -> {
+                    CircleMemberDomainModel circleMemberDomainModel = this.circleMemberPort.findByUserIdAndCircleId(userId, circleDomainModel.getId()).orElseThrow(
+                            () -> new UnauthorizedException(
+                                    ErrorCode.NOT_MEMBER,
+                                    "The user is not a member of circle"
+                            )
+                    );
+
+                    validatorBucket
+                            .consistOf(CircleMemberStatusValidator.of(
+                                    circleMemberDomainModel.getStatus(),
+                                    List.of(CircleMemberStatus.MEMBER)
+                            ));
+                }
+        );
+
+        validatorBucket
+                .consistOf(TargetIsDeletedValidator.of(boardDomainModel.getIsDeleted()))
+                .validate();
+
+        // TODO: Pagination
+        return this.postPort.findAll(boardId)
+                .stream()
+                .map(PostResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public PostResponseDto create(String creatorId, PostCreateRequestDto postCreateRequestDto) {
         ValidatorBucket validatorBucket = ValidatorBucket.of();
