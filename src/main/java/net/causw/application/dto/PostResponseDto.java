@@ -14,6 +14,9 @@ public class PostResponseDto {
     private String id;
     private String title;
     private String content;
+    private String writerId;
+    private String writerName;
+    private String writerProfileImage;
     private Boolean isDeleted;
     private BoardResponseDto board;
     private LocalDateTime createdAt;
@@ -24,6 +27,9 @@ public class PostResponseDto {
             String id,
             String title,
             String content,
+            String writerId,
+            String writerName,
+            String writerProfileImage,
             Boolean isDeleted,
             BoardResponseDto board,
             LocalDateTime createdAt,
@@ -33,6 +39,9 @@ public class PostResponseDto {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.writerId = writerId;
+        this.writerName = writerName;
+        this.writerProfileImage = writerProfileImage;
         this.isDeleted = isDeleted;
         this.board = board;
         this.createdAt = createdAt;
@@ -47,6 +56,9 @@ public class PostResponseDto {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
+                post.getWriter().getId(),
+                post.getWriter().getName(),
+                post.getWriter().getProfileImage(),
                 post.getIsDeleted(),
                 BoardResponseDto.from(post.getBoard()),
                 post.getCreatedAt(),
@@ -63,6 +75,9 @@ public class PostResponseDto {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
+                post.getWriter().getId(),
+                post.getWriter().getName(),
+                post.getWriter().getProfileImage(),
                 post.getIsDeleted(),
                 BoardResponseDto.from(post.getBoard()),
                 post.getCreatedAt(),

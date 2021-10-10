@@ -73,7 +73,7 @@ public class BoardDomainModel {
             String category,
             CircleDomainModel circle
     ) {
-        createRoleList.add(Role.ADMIN.getValue());
+        createRoleList.add(Role.ADMIN.toString());
 
         return new BoardDomainModel(
                 null,
