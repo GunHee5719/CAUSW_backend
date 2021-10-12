@@ -1,5 +1,6 @@
 package net.causw.domain.model;
 
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
+import net.causw.domain.exceptions.BadRequestException;
+import net.causw.domain.exceptions.ErrorCode;
 
 @Getter
 @Setter
@@ -73,7 +76,20 @@ public class BoardDomainModel {
             String category,
             CircleDomainModel circle
     ) {
-        createRoleList.add(Role.ADMIN.toString());
+        try{
+            createRoleList = createRoleList
+                .stream()
+                .map(String::toUpperCase)
+                .map(Role::valueOf)
+                .map(Role::getValue)
+                .collect(Collectors.toList());
+        } catch (Exception e){
+            throw new BadRequestException(
+                ErrorCode.INVALID_PARAMETER,
+                "Invalid create role"
+            );
+        }
+        createRoleList.add(Role.ADMIN.getValue());
 
         return new BoardDomainModel(
                 null,

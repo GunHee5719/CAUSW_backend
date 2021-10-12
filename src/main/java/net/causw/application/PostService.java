@@ -172,9 +172,9 @@ public class PostService {
                 .consistOf(UserRoleValidator.of(
                         creatorDomainModel.getRole(),
                         boardDomainModel.getCreateRoleList()
-                                .stream()
-                                .map(Role::valueOf)
-                                .collect(Collectors.toList())
+                            .stream()
+                            .map(Role::of)
+                            .collect(Collectors.toList())
                 ));
 
         boardDomainModel.getCircle().ifPresent(

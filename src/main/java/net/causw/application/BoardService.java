@@ -156,7 +156,7 @@ public class BoardService {
                 .consistOf(ConstraintValidator.of(boardDomainModel, this.validator))
                 .validate();
 
-        return BoardResponseDto.from(this.boardPort.create(boardDomainModel));
+        return BoardResponseDto.from(this.boardPort.create(boardDomainModel), creatorDomainModel.getRole());
     }
 
     @Transactional
